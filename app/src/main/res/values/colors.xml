@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+  <!-- App colors -->
+  <color name="colorPrimary">#3F51B5</color>
+  <color name="colorPrimaryDark">#303F9F</color>
+  <color name="colorAccent">#FF4081</color>
+
+  <!-- Specific colors -->
+  <color name="movie_detail_fragment_movie_title_background">@color/colorAccent</color>
+  <color name="movie_detail_fragment_movie_title_text">@color/whiteFFFFFF</color>
+
+  <!-- Colors by name -->
+  <color name="whiteFFFFFF">#FFFFFF</color>
 </resources>
