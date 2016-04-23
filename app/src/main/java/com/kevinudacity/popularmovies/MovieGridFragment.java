@@ -103,7 +103,7 @@ public class MovieGridFragment extends Fragment {
       try {
         Uri builtUri = Uri.parse(getString(R.string.moviedb_path_base)).buildUpon()
           .appendPath(getString(R.string.moviedb_path_movie_most_popular))
-          .appendQueryParameter(getString(R.string.moviedb_query_param_api_key), "NOT REAL")
+          .appendQueryParameter(getString(R.string.moviedb_query_param_api_key), "NOT_REAL")
           .build();
 
         URL url = new URL(builtUri.toString());
@@ -139,9 +139,19 @@ public class MovieGridFragment extends Fragment {
         moviesJsonStr = buffer.toString();
 
       } catch (IOException e) {
-
+        Log.e(LOG_TAG, "Error ", e);
+        return null;
       } finally {
-
+        if (urlConnection != null) {
+          urlConnection.disconnect();
+        }
+        if (reader != null) {
+          try {
+            reader.close();
+          } catch (final IOException e) {
+            Log.e(LOG_TAG, "Error closing stream", e);
+          }
+        }
       }
       return null;
     }
