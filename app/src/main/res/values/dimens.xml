@@ -22,4 +22,5 @@
   <dimen name="linear_layout_movie_information_horizontal_margin">40dp</dimen>
   <dimen name="movie_detail_fragment_user_rating_top_margin">5dp</dimen>
   <dimen name="movie_detail_fragment_plot_synopsis_top_margin">20dp</dimen>
+  <dimen name="movie_detail_fragment_scrollview_bottom_padding">20dp</dimen>
 </resources>

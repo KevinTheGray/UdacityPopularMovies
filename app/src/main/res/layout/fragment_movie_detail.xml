@@ -92,6 +92,6 @@
       android:layout_below="@+id/relative_layout_movie_details"
       android:textSize="@dimen/movie_detail_fragment_plot_synopsis_text_size"
       android:text="@string/movie_detail_default_plot_synopsis"
-      android:paddingBottom="20dp"/>
+      android:paddingBottom="@dimen/movie_detail_fragment_scrollview_bottom_padding"/>
   </RelativeLayout>
 </ScrollView>
