@@ -21,7 +21,7 @@ public class MovieGridAdapter extends BaseAdapter {
 
   @Override
   public int getCount() {
-    return 50;
+    return 3;
   }
 
   @Override

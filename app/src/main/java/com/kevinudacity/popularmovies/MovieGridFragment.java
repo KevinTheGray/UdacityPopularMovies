@@ -1,6 +1,7 @@
 package com.kevinudacity.popularmovies;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 
 /**
@@ -49,6 +51,13 @@ public class MovieGridFragment extends Fragment {
     View rootView = inflater.inflate(R.layout.fragment_movie_grid, container, false);
     GridView gridview = (GridView) rootView.findViewById(R.id.movie_grid_fragment_gridview);
     gridview.setAdapter(new MovieGridAdapter(getActivity()));
+    gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+      @Override
+      public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Intent intent = new Intent(getActivity(), MainActivity.class);
+        startActivity(intent);
+      }
+    });
 
     // Inflate the layout for this fragment
     return rootView;
