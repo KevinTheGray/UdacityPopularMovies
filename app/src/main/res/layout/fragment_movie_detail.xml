@@ -62,13 +62,13 @@
           android:textSize="@dimen/movie_detail_fragment_release_date_text_size"
           android:text="@string/movie_detail_default_release_date"/>
         <!-- Duration -->
-        <TextView
+        <!--<TextView
           android:id="@+id/textview_duration"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:textSize="@dimen/movie_detail_fragment_duration_text_size"
           android:text="@string/movie_detail_default_duration"
-          android:textStyle="italic"/>
+          android:textStyle="italic"/>-->
         <!-- User rating -->
         <TextView
           android:id="@+id/textview_user_rating"

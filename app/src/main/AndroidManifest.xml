@@ -19,9 +19,9 @@
     </activity>
     <activity android:name=".MovieDetailActivity"
       android:label="@string/movie_detail_label">
-      <meta-data
+      <!--<meta-data
         android:name="android.support.PARENT_ACTIVITY"
-        android:value="com.kevinudacity.popularmovies.MainActivity"/>
+        android:value="com.kevinudacity.popularmovies.MainActivity"/>-->
     </activity>
   </application>
 

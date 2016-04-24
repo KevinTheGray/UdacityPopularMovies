@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- MovieModel -->
+  <string name="movie_model_original_title" translatable="false">original_title</string>
+  <string name="movie_model_release_date" translatable="false">release_date</string>
+  <string name="movie_model_overview" translatable="false">overview</string>
+  <string name="movie_model_vote_average" translatable="false">vote_average</string>
+  <string name="movie_model_poster_path" translatable="false">poster_path</string>
+  <!-- Generic -->
+  <string name="generic_json_key_results" translatable="false">results</string>
+</resources>

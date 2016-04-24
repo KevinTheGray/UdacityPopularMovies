@@ -5,4 +5,6 @@
   <string name="moviedb_path_movie_most_popular" translatable="false">popular</string>
   <string name="moviedb_path_movie_top_rated" translatable="false">top_rated</string>
   <string name="moviedb_query_param_api_key" translatable="false">api_key</string>
+  <string name="moviedb_path_images_base" translatable="false">http://image.tmdb.org/t/p/</string>
+  <string name="moviedb_path_images_w185" translatable="false">w185</string>
 </resources>

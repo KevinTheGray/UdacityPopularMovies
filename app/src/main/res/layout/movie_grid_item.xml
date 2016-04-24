@@ -4,7 +4,6 @@
              android:layout_height="@dimen/movie_grid_fragment_cell_height">
   <ImageView
     android:id="@+id/image_view"
-    android:background="@color/colorAccent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"/>
 </FrameLayout>
