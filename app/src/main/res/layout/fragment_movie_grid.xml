@@ -5,6 +5,7 @@
              tools:context=".MovieGridFragment">
   <GridView
     android:id="@+id/movie_grid_fragment_gridview"
+    android:background="@color/colorPrimaryDark"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:columnWidth="@dimen/movie_grid_fragment_cell_width"

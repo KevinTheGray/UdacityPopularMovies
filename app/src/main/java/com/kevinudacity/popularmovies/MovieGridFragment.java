@@ -1,7 +1,6 @@
 package com.kevinudacity.popularmovies;
 
 
-import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -38,6 +37,13 @@ public class MovieGridFragment extends Fragment {
 
   public MovieGridFragment() {
     // Required empty public constructor
+  }
+
+  public interface Callback {
+    /**
+     * MovieGridFragment for when an item has been selected.
+     */
+    public void onItemSelected(MovieModel movieModel);
   }
 
   @Override
@@ -79,11 +85,9 @@ public class MovieGridFragment extends Fragment {
     gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
       @Override
       public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Intent intent = new Intent(getActivity(), MovieDetailActivity.class);
         MovieModel movieModel = (MovieModel) movieGridAdapter.getItem(position);
-        String movieModelBundleKey = getString(R.string.bundle_key_movie_model);
-        intent.putExtra(movieModelBundleKey, movieModel);
-        startActivity(intent);
+        MainActivity mainActivity = (MainActivity) getActivity();
+        mainActivity.onItemSelected(movieModel);
       }
     });
 
@@ -133,7 +137,7 @@ public class MovieGridFragment extends Fragment {
       try {
         Uri builtUri = Uri.parse(getString(R.string.moviedb_path_base)).buildUpon()
           .appendPath(filter)
-          .appendQueryParameter(getString(R.string.moviedb_query_param_api_key), "PUT API KEY HERE")
+          .appendQueryParameter(getString(R.string.moviedb_query_param_api_key), "")
           .build();
 
         URL url = new URL(builtUri.toString());
