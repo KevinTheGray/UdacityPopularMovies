@@ -6,6 +6,7 @@
   <string name="movie_model_overview" translatable="false">overview</string>
   <string name="movie_model_vote_average" translatable="false">vote_average</string>
   <string name="movie_model_poster_path" translatable="false">poster_path</string>
+  <string name="movie_model_id" translatable="false">id</string>
   <!-- Generic -->
   <string name="generic_json_key_results" translatable="false">results</string>
 </resources>

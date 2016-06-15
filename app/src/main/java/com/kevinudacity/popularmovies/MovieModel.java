@@ -20,22 +20,25 @@ public class MovieModel implements Parcelable {
   private String overview;
   private double voteAverage;
   private String posterPath;
+  private String id;
 
   public MovieModel(String originalTitle, String releaseDate, String overview, float voteAverage,
-                    String posterPath) {
+                    String posterPath, String id) {
     this.originalTitle = originalTitle;
     this.releaseDate = releaseDate;
     this.overview = overview;
     this.voteAverage = voteAverage;
     this.posterPath = posterPath;
+    this.id = id;
   }
 
-  public MovieModel(Context context, JSONObject object) throws JSONException {
-    this.originalTitle = object.getString(context.getString(R.string.movie_model_original_title));
-    this.releaseDate = object.getString(context.getString(R.string.movie_model_release_date));
-    this.overview = object.getString(context.getString(R.string.movie_model_overview));
-    this.voteAverage = object.getDouble(context.getString(R.string.movie_model_vote_average));
-    this.posterPath = object.getString(context.getString(R.string.movie_model_poster_path));
+  public MovieModel(Context context, JSONObject movieJSONObject) throws JSONException {
+    this.originalTitle = movieJSONObject.getString(context.getString(R.string.movie_model_original_title));
+    this.releaseDate = movieJSONObject.getString(context.getString(R.string.movie_model_release_date));
+    this.overview = movieJSONObject.getString(context.getString(R.string.movie_model_overview));
+    this.voteAverage = movieJSONObject.getDouble(context.getString(R.string.movie_model_vote_average));
+    this.posterPath = movieJSONObject.getString(context.getString(R.string.movie_model_poster_path));
+    this.id = movieJSONObject.getString(context.getString(R.string.movie_model_id));
   }
 
   public URL getFullPosterPath(Context context) throws MalformedURLException {
@@ -69,6 +72,10 @@ public class MovieModel implements Parcelable {
     return posterPath;
   }
 
+  public String getId() {
+    return id;
+  }
+
   @Override
   public int describeContents() {
     return 0;
@@ -81,6 +88,7 @@ public class MovieModel implements Parcelable {
     dest.writeString(overview);
     dest.writeDouble(voteAverage);
     dest.writeString(posterPath);
+    dest.writeString(id);
   }
 
   public static final Parcelable.Creator<MovieModel> CREATOR
@@ -100,5 +108,6 @@ public class MovieModel implements Parcelable {
     overview = in.readString();
     voteAverage = in.readDouble();
     posterPath = in.readString();
+    id = in.readString();
   }
 }

@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -106,43 +107,13 @@ public class MovieGridFragment extends Fragment {
 
     private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
 
-    private MovieModel[] getMovieDataFromJson(String stringMoviesJson) throws JSONException {
-      JSONObject moviesJson = new JSONObject(stringMoviesJson);
-      JSONArray moviesJsonArray =
-        moviesJson.getJSONArray(getString(R.string.generic_json_key_results));
-
-      MovieModel[] returnedMovieModels = new MovieModel[moviesJsonArray.length()];
-      for (int i = 0; i < moviesJsonArray.length(); i++) {
-        JSONObject object = moviesJsonArray.getJSONObject(i);
-        MovieModel model = new MovieModel(getActivity(), object);
-        returnedMovieModels[i] = model;
-      }
-      return returnedMovieModels;
-    }
-
-    @Override
-    protected MovieModel[] doInBackground(String... params) {
+    private String baseFetchRequest(URL url) {
       // These two need to be declared outside the try/catch
       // so that they can be closed in the finally block.
       HttpURLConnection urlConnection = null;
       BufferedReader reader = null;
 
-      // Will contain the raw JSON response as a string.
-      String moviesJsonStr = null;
-      String filter = getString(R.string.moviedb_path_movie_most_popular);
-      if (params.length >= 1) {
-        filter = params[0];
-      }
-
       try {
-        Uri builtUri = Uri.parse(getString(R.string.moviedb_path_base)).buildUpon()
-          .appendPath(filter)
-          .appendQueryParameter(getString(R.string.moviedb_query_param_api_key), "")
-          .build();
-
-        URL url = new URL(builtUri.toString());
-        Log.v(LOG_TAG, "" + url);
-
         // Create the request to OpenWeatherMap, and open the connection
         urlConnection = (HttpURLConnection) url.openConnection();
         urlConnection.setRequestMethod("GET");
@@ -169,15 +140,7 @@ public class MovieGridFragment extends Fragment {
           // Stream was empty.  No point in parsing.
           return null;
         }
-        moviesJsonStr = buffer.toString();
-
-        try {
-          return getMovieDataFromJson(moviesJsonStr);
-        } catch (JSONException e) {
-          Log.e(LOG_TAG, e.getMessage(), e);
-          e.printStackTrace();
-        }
-
+        return buffer.toString();
       } catch (IOException e) {
         Log.e(LOG_TAG, "Error ", e);
         return null;
@@ -192,6 +155,82 @@ public class MovieGridFragment extends Fragment {
             Log.e(LOG_TAG, "Error closing stream", e);
           }
         }
+      }
+    }
+
+    private String fetchBaseMovieData(String filter) throws MalformedURLException {
+      Uri builtUri = Uri.parse(getString(R.string.moviedb_path_base)).buildUpon()
+        .appendPath(filter)
+        .appendQueryParameter(getString(R.string.moviedb_query_param_api_key), "")
+        .build();
+
+      URL url = new URL(builtUri.toString());
+      Log.v(LOG_TAG, "" + url);
+      return baseFetchRequest(url);
+    }
+
+    private String fetchMovieAdditionalData(String id, String dataPath) throws MalformedURLException {
+      Uri builtUri = Uri.parse(getString(R.string.moviedb_path_base)).buildUpon()
+        .appendPath(id)
+        .appendPath(dataPath)
+        .appendQueryParameter(getString(R.string.moviedb_query_param_api_key), "")
+        .build();
+
+      URL url = new URL(builtUri.toString());
+      Log.v(LOG_TAG, "" + url);
+      return baseFetchRequest(url);
+    }
+
+    private MovieModel[] getMovieDataFromJson(String stringMoviesJson) throws JSONException {
+      JSONObject moviesJson = new JSONObject(stringMoviesJson);
+      JSONArray moviesJsonArray =
+        moviesJson.getJSONArray(getString(R.string.generic_json_key_results));
+
+      MovieModel[] returnedMovieModels = new MovieModel[moviesJsonArray.length()];
+      for (int i = 0; i < moviesJsonArray.length(); i++) {
+          JSONObject movieJSONObject = moviesJsonArray.getJSONObject(i);
+          // Get the id out so we can get additional informtion
+          String movieId = movieJSONObject.getString(getActivity().getString(R.string.movie_model_id));
+
+          // Get the trailers
+          /*String trailersJSONString = fetchMovieAdditionalData(movieId,
+            getString(R.string.moviedb_path_movie_videos));
+          JSONObject trailersJSONObject = new JSONObject(trailersJSONString);
+          JSONArray trailersJSONArray =
+            trailersJSONObject.getJSONArray(getString(R.string.generic_json_key_results));
+
+          // Get the reviews
+          String reviewsJSONString = fetchMovieAdditionalData(movieId,
+            getString(R.string.moviedb_path_movie_reviews));
+          JSONObject reviewsJSONObject = new JSONObject(reviewsJSONString);
+          JSONArray reviewsJSONArray =
+            reviewsJSONObject.getJSONArray(getString(R.string.generic_json_key_results));*/
+
+          MovieModel model = new MovieModel(getActivity(), movieJSONObject);
+          returnedMovieModels[i] = model;
+      }
+      return returnedMovieModels;
+    }
+
+    @Override
+    protected MovieModel[] doInBackground(String... params) {
+      // Will contain the raw JSON response as a string.
+      String moviesJsonStr = null;
+      String filter = getString(R.string.moviedb_path_movie_most_popular);
+      if (params.length >= 1) {
+        filter = params[0];
+      }
+
+      try {
+        moviesJsonStr = fetchBaseMovieData(filter);
+        try {
+          return getMovieDataFromJson(moviesJsonStr);
+        } catch (JSONException e) {
+          Log.e(LOG_TAG, e.getMessage(), e);
+          e.printStackTrace();
+        }
+      } catch (MalformedURLException e){
+        Log.e(LOG_TAG, "Malformed URL Exception", e);
       }
       return null;
     }
