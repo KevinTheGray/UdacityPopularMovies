@@ -7,6 +7,12 @@
   <string name="movie_model_vote_average" translatable="false">vote_average</string>
   <string name="movie_model_poster_path" translatable="false">poster_path</string>
   <string name="movie_model_id" translatable="false">id</string>
+  <!-- MovieTrailerModel -->
+  <string name="movie_trailer_model_name" translatable="false">name</string>
+  <string name="movie_trailer_model_key" translatable="false">key</string>
+  <!-- MovieReviewModel -->
+  <string name="movie_review_model_author" translatable="false">author</string>
+  <string name="movie_review_model_content" translatable="false">content</string>
   <!-- Generic -->
   <string name="generic_json_key_results" translatable="false">results</string>
 </resources>

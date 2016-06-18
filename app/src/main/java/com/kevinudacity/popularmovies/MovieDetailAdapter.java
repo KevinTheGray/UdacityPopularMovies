@@ -2,11 +2,14 @@ package com.kevinudacity.popularmovies;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -44,7 +47,7 @@ public class MovieDetailAdapter extends BaseAdapter {
 
   @Override
   public int getCount() {
-    return 1;
+    return 1 + mMovieModel.getTrailers().size() + mMovieModel.getReviews().size();
   }
 
   @Override
@@ -56,8 +59,15 @@ public class MovieDetailAdapter extends BaseAdapter {
   public int getItemViewType(int position) {
     if (position == 0) {
       return VIEW_TYPE_DETAIL;
+    } else if (position <= mMovieModel.getTrailers().size()) {
+      return VIEW_TYPE_VIDEO;
     }
-    return VIEW_TYPE_UNKNOWN;
+    return VIEW_TYPE_REVIEW;
+  }
+
+  public void setmMovieModel(MovieModel mMovieModel) {
+    this.mMovieModel = mMovieModel;
+    this.notifyDataSetChanged();
   }
 
   @Override
@@ -66,7 +76,7 @@ public class MovieDetailAdapter extends BaseAdapter {
   }
 
   @Override
-  public View getView(int position, View convertView, ViewGroup parent) {
+  public View getView(final int position, View convertView, ViewGroup parent) {
     if (getItemViewType(position) == VIEW_TYPE_DETAIL) {
       MainDetailViewHolder viewHolder;
       if (convertView == null) {
@@ -89,9 +99,76 @@ public class MovieDetailAdapter extends BaseAdapter {
       } catch (MalformedURLException e) {
         Log.e(LOG_TAG, "Could not form url for image");
       }
-      return convertView;
+    } else if (getItemViewType(position) == VIEW_TYPE_VIDEO) {
+      final TrailerViewHolder viewHolder;
+      if (convertView == null) {
+        LayoutInflater inflater = ((Activity)mContext).getLayoutInflater();
+        convertView = inflater.inflate(R.layout.movie_detail_trailer_item, parent, false);
+        viewHolder = new TrailerViewHolder(convertView);
+        convertView.setTag(viewHolder);
+      } else {
+        viewHolder = (TrailerViewHolder) convertView.getTag();
+      }
+      if (position != 1) {
+        viewHolder.trailerHeaderTextView.setVisibility(View.GONE);
+      } else {
+        viewHolder.trailerHeaderTextView.setVisibility(View.VISIBLE);
+      }
+      viewHolder.trailerNameTextView.setText(mMovieModel.getTrailers().get(position - 1).getName());
+      viewHolder.trailerPlayButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          mContext.
+            startActivity(new Intent(
+              Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" +
+                mMovieModel.getTrailers().get(position - 1).getKey())));
+        }
+      });
+    } else {
+      ReviewViewHolder viewHolder;
+      if (convertView == null) {
+        LayoutInflater inflater = ((Activity)mContext).getLayoutInflater();
+        convertView = inflater.inflate(R.layout.movie_detail_review_item, parent, false);
+        viewHolder = new ReviewViewHolder(convertView);
+        convertView.setTag(viewHolder);
+      } else {
+        viewHolder = (ReviewViewHolder) convertView.getTag();
+      }
+      if (position != 1 + mMovieModel.getTrailers().size()) {
+        viewHolder.reviewHeaderTextView.setVisibility(View.GONE);
+      } else {
+        viewHolder.reviewHeaderTextView.setVisibility(View.VISIBLE);
+      }
+      viewHolder.reviewAuthorTextView
+        .setText(mMovieModel.getReviews().get(position - mMovieModel.getTrailers().size() - 1).getAuthor());
+      viewHolder.reviewTextView
+        .setText(mMovieModel.getReviews().get(position - mMovieModel.getTrailers().size() - 1).getContent());
     }
-    return null;
+    return convertView;
+  }
+
+  public static class ReviewViewHolder {
+    public final TextView reviewHeaderTextView;
+    public final TextView reviewAuthorTextView;
+    public final TextView reviewTextView;
+
+    public ReviewViewHolder(View view) {
+      reviewHeaderTextView = (TextView) view.findViewById(R.id.textview_review_header);
+      reviewAuthorTextView = (TextView) view.findViewById(R.id.textview_review_author);
+      reviewTextView = (TextView) view.findViewById(R.id.textview_review);
+    }
+  }
+
+  public static class TrailerViewHolder {
+    public final TextView trailerHeaderTextView;
+    public final TextView trailerNameTextView;
+    public final Button trailerPlayButton;
+
+    public TrailerViewHolder(View view) {
+      trailerHeaderTextView = (TextView) view.findViewById(R.id.textview_trailer_header);
+      trailerNameTextView = (TextView) view.findViewById(R.id.textview_trailer_name);
+      trailerPlayButton = (Button) view.findViewById(R.id.button_trailer_play);
+    }
   }
 
   public static class MainDetailViewHolder {

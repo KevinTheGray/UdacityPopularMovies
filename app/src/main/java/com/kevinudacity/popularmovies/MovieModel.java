@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
 /**
  * Created by KG on 4/23/16.
@@ -21,6 +22,8 @@ public class MovieModel implements Parcelable {
   private double voteAverage;
   private String posterPath;
   private String id;
+  private ArrayList<MovieReviewModel> reviews = new ArrayList<MovieReviewModel>();
+  private ArrayList<MovieTrailerModel> trailers = new ArrayList<MovieTrailerModel>();
 
   public MovieModel(String originalTitle, String releaseDate, String overview, float voteAverage,
                     String posterPath, String id) {
@@ -74,6 +77,22 @@ public class MovieModel implements Parcelable {
 
   public String getId() {
     return id;
+  }
+
+  public ArrayList<MovieReviewModel> getReviews() {
+    return reviews;
+  }
+
+  public ArrayList<MovieTrailerModel> getTrailers() {
+    return trailers;
+  }
+
+  public void setTrailers(ArrayList<MovieTrailerModel> trailers) {
+    this.trailers = trailers;
+  }
+
+  public void setReviews(ArrayList<MovieReviewModel> reviews) {
+    this.reviews = reviews;
   }
 
   @Override

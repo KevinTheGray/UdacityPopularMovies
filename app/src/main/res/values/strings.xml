@@ -18,4 +18,9 @@
   <string name="movie_detail_default_user_rating" translatable="false">User Rating</string>
   <string name="movie_detail_default_plot_synopsis" translatable="false">Plot Synopsis</string>
   <string name="movie_detail_movie_poster_content_description" translatable="false">Movie Poster</string>
+  <string name="movie_detail_trailer_header" translatable="true">Trailers:</string>
+  <string name="movie_detail_reviews_header" translatable="true">Reviews:</string>
+  <string name="movie_detail_trailer_default_trailer_name" translatable="false">Trailer Name</string>
+  <string name="movie_detail_trailer_default_author_name" translatable="false">Author Name</string>
+  <string name="movie_detail_trailer_default_content" translatable="false">Content</string>
 </resources>

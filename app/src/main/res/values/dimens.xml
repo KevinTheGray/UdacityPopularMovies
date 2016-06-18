@@ -23,4 +23,11 @@
   <dimen name="movie_detail_fragment_user_rating_top_margin">5dp</dimen>
   <dimen name="movie_detail_fragment_plot_synopsis_top_margin">20dp</dimen>
   <dimen name="movie_detail_fragment_scrollview_bottom_padding">20dp</dimen>
+  <dimen name="movie_detail_fragment_trailer_header_text_size">24sp</dimen>
+  <dimen name="movie_detail_fragment_trailer_item_horizontal_padding">15dp</dimen>
+  <dimen name="movie_detail_fragment_trailer_play_button_size">70dp</dimen>
+  <dimen name="movie_detail_fragment_trailer_play_button_top_margin">5dp</dimen>
+  <dimen name="movie_detail_fragment_review_author_size">14sp</dimen>
+  <dimen name="movie_detail_fragment_review_content_size">12sp</dimen>
+  <dimen name="movie_detail_fragment_review_header_bottom_margin">10dp</dimen>
 </resources>
