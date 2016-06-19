@@ -141,7 +141,7 @@ public class MovieDetailFragment extends Fragment {
       Uri builtUri = Uri.parse("http://api.themoviedb.org/3/movie").buildUpon()
         .appendPath(id)
         .appendPath(dataPath)
-        .appendQueryParameter("api_key", "PUT_API_KEY_HERE")
+        .appendQueryParameter("api_key", "PUT API KEY HERE")
         .build();
 
       URL url = new URL(builtUri.toString());

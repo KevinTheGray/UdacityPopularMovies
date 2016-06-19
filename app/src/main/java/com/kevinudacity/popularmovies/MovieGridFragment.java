@@ -240,7 +240,7 @@ public class MovieGridFragment extends Fragment {
     private String fetchBaseMovieData(String filter) throws MalformedURLException {
       Uri builtUri = Uri.parse(getString(R.string.moviedb_path_base)).buildUpon()
         .appendPath(filter)
-        .appendQueryParameter(getString(R.string.moviedb_query_param_api_key), "PUT_API_KEY_HERE")
+        .appendQueryParameter(getString(R.string.moviedb_query_param_api_key), "PUT API KEY HERE")
         .build();
 
       URL url = new URL(builtUri.toString());
@@ -252,7 +252,7 @@ public class MovieGridFragment extends Fragment {
       Uri builtUri = Uri.parse(getString(R.string.moviedb_path_base)).buildUpon()
         .appendPath(id)
         .appendPath(dataPath)
-        .appendQueryParameter(getString(R.string.moviedb_query_param_api_key), "PUT_API_KEY_HERE")
+        .appendQueryParameter(getString(R.string.moviedb_query_param_api_key), "PUT API KEY HERE")
         .build();
 
       URL url = new URL(builtUri.toString());
