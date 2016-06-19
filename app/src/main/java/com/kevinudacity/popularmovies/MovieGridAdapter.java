@@ -2,6 +2,7 @@ package com.kevinudacity.popularmovies;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.net.MalformedURLException;
@@ -34,6 +36,10 @@ public class MovieGridAdapter extends BaseAdapter {
     this.notifyDataSetChanged();
   }
 
+  public ArrayList<MovieModel> getMovieModels() {
+    return movieModels;
+  }
+
   @Override
   public int getCount() {
     return this.movieModels.size();
@@ -51,19 +57,33 @@ public class MovieGridAdapter extends BaseAdapter {
 
 
   @Override
-  public View getView(int position, View convertView, ViewGroup parent) {
+  public View getView(final int position, View convertView, ViewGroup parent) {
     View view = convertView;
     if (view == null) {
       LayoutInflater inflater = ((Activity)context).getLayoutInflater();
       view = inflater.inflate(R.layout.movie_grid_item, parent, false);
     }
-    ImageView imageView = (ImageView) view.findViewById(R.id.image_view);
-    try {
-      URL imageUrl = this.movieModels.get(position).getFullPosterPath(context);
-      Log.v(LOG_TAG, imageUrl.toString());
-      Picasso.with(context).load(imageUrl.toString()).into(imageView);
-    } catch (MalformedURLException e){
-      Log.e(LOG_TAG, "Could not form url for image");
+    final ImageView imageView = (ImageView) view.findViewById(R.id.image_view);
+    if (movieModels.get(position).getPosterBitmap() == null) {
+      try {
+        URL imageUrl = this.movieModels.get(position).getFullPosterPath(context);
+        Log.v(LOG_TAG, imageUrl.toString());
+        Picasso.with(context).load(imageUrl.toString()).into(imageView, new Callback() {
+          @Override
+          public void onSuccess() {
+            movieModels.get(position).setPosterBitmap(
+              ((BitmapDrawable) imageView.getDrawable()).getBitmap());
+          }
+
+          @Override
+          public void onError() {
+          }
+        });
+      } catch (MalformedURLException e) {
+        Log.e(LOG_TAG, "Could not form url for image");
+      }
+    } else {
+      imageView.setImageBitmap(movieModels.get(position).getPosterBitmap());
     }
     return view;
   }

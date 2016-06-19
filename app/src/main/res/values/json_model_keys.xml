@@ -10,9 +10,11 @@
   <!-- MovieTrailerModel -->
   <string name="movie_trailer_model_name" translatable="false">name</string>
   <string name="movie_trailer_model_key" translatable="false">key</string>
+  <string name="movie_trailer_id" translatable="false">id</string>
   <!-- MovieReviewModel -->
   <string name="movie_review_model_author" translatable="false">author</string>
   <string name="movie_review_model_content" translatable="false">content</string>
+  <string name="movie_review_id" translatable="false">id</string>
   <!-- Generic -->
   <string name="generic_json_key_results" translatable="false">results</string>
 </resources>

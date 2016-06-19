@@ -53,6 +53,8 @@ public class MovieDetailFragment extends Fragment {
       ListView listView = (ListView) rootView.findViewById(R.id.movie_detail_fragment_listview);
       listView.setAdapter(mMovieDetailAdapter);
       fetchMovieDetails();
+    } else {
+      rootView = inflater.inflate(R.layout.fragment_movie_detail_default, container, false);
     }
 
     return rootView;
@@ -120,10 +122,10 @@ public class MovieDetailFragment extends Fragment {
     }
 
     private String fetchMovieAdditionalData(String id, String dataPath) throws MalformedURLException {
-      Uri builtUri = Uri.parse(getString(R.string.moviedb_path_base)).buildUpon()
+      Uri builtUri = Uri.parse("http://api.themoviedb.org/3/movie").buildUpon()
         .appendPath(id)
         .appendPath(dataPath)
-        .appendQueryParameter(getString(R.string.moviedb_query_param_api_key), "")
+        .appendQueryParameter("api_key", "")
         .build();
 
       URL url = new URL(builtUri.toString());
@@ -133,40 +135,65 @@ public class MovieDetailFragment extends Fragment {
 
     @Override
     protected Void doInBackground(Void... params) {
-      try {
-       String movieTrailersJsonStr = fetchMovieAdditionalData(movieModel.getId(),
-          getString(R.string.moviedb_path_movie_videos));
-        String movieReviewsJsonStr = fetchMovieAdditionalData(movieModel.getId(),
-          getString(R.string.moviedb_path_movie_reviews));
+      if (isAdded()) {
         try {
-          // Trailers
-          JSONObject trailersJSONObject = new JSONObject(movieTrailersJsonStr);
-          JSONArray trailersJSONArray =
-            trailersJSONObject.getJSONArray(getString(R.string.generic_json_key_results));
-          ArrayList<MovieTrailerModel> trailerModelArrayList = new ArrayList<>();
-          for (int i = 0; i < trailersJSONArray.length(); i++) {
-            JSONObject trailerJSONObject = trailersJSONArray.getJSONObject(i);
-            MovieTrailerModel movieTrailerModel = new MovieTrailerModel(getActivity(), trailerJSONObject);
-            trailerModelArrayList.add(movieTrailerModel);
+          String movieTrailersJsonStr = fetchMovieAdditionalData(movieModel.getId(),
+            "videos");
+          String movieReviewsJsonStr = fetchMovieAdditionalData(movieModel.getId(),
+            "reviews");
+          try {
+            // Trailers
+            if (movieTrailersJsonStr != null) {
+              JSONObject trailersJSONObject = new JSONObject(movieTrailersJsonStr);
+              JSONArray trailersJSONArray =
+                trailersJSONObject.getJSONArray("results");
+              final ArrayList<MovieTrailerModel> trailerModelArrayList = new ArrayList<>();
+              for (int i = 0; i < trailersJSONArray.length(); i++) {
+                JSONObject trailerJSONObject = trailersJSONArray.getJSONObject(i);
+                MovieTrailerModel movieTrailerModel = new MovieTrailerModel(getActivity(), trailerJSONObject);
+                trailerModelArrayList.add(movieTrailerModel);
+              }
+              if (getActivity() != null) {
+                getActivity().runOnUiThread(new Runnable() {
+                  @Override
+                  public void run() {
+                    movieModel.setTrailers(trailerModelArrayList);
+                    mMovieDetailAdapter.notifyDataSetChanged();
+                  }
+                });
+              }
+
+            }
+            // Reviews
+            if (movieReviewsJsonStr != null) {
+              JSONObject reviewsJSONObject = new JSONObject(movieReviewsJsonStr);
+              JSONArray reviewsJSONArray =
+                reviewsJSONObject.getJSONArray("results");
+              final ArrayList<MovieReviewModel> reviewModelArrayList = new ArrayList<>();
+              for (int i = 0; i < reviewsJSONArray.length(); i++) {
+                JSONObject reviewJSONObject = reviewsJSONArray.getJSONObject(i);
+                MovieReviewModel movieReviewModel = new MovieReviewModel(getActivity(), reviewJSONObject);
+                reviewModelArrayList.add(movieReviewModel);
+              }
+              if (getActivity() != null) {
+                getActivity().runOnUiThread(new Runnable() {
+                  @Override
+                  public void run() {
+                    movieModel.setReviews(reviewModelArrayList);
+                    mMovieDetailAdapter.notifyDataSetChanged();
+                  }
+                });
+              }
+
+            }
+
+          } catch (JSONException e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
           }
-          // Reviews
-          JSONObject reviewsJSONObject = new JSONObject(movieReviewsJsonStr);
-          JSONArray reviewsJSONArray =
-            reviewsJSONObject.getJSONArray(getString(R.string.generic_json_key_results));
-          ArrayList<MovieReviewModel> reviewModelArrayList = new ArrayList<>();
-          for (int i = 0; i < reviewsJSONArray.length(); i++) {
-            JSONObject reviewJSONObject = reviewsJSONArray.getJSONObject(i);
-            MovieReviewModel movieReviewModel = new MovieReviewModel(getActivity(), reviewJSONObject);
-            reviewModelArrayList.add(movieReviewModel);
-          }
-          movieModel.setTrailers(trailerModelArrayList);
-          movieModel.setReviews(reviewModelArrayList);
-        } catch (JSONException e) {
-          Log.e(LOG_TAG, e.getMessage(), e);
-          e.printStackTrace();
+        } catch (MalformedURLException e) {
+          Log.e(LOG_TAG, "Malformed URL Exception", e);
         }
-      } catch (MalformedURLException e){
-        Log.e(LOG_TAG, "Malformed URL Exception", e);
       }
       return null;
     }

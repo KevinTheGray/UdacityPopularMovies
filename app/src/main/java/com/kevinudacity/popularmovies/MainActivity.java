@@ -28,9 +28,19 @@ public class MainActivity extends AppCompatActivity implements MovieGridFragment
     }
   }
 
+  public void onFavoritesUpdated() {
+    MovieGridFragment movieGridFragment =
+      (MovieGridFragment) getSupportFragmentManager().findFragmentById(R.id.movie_grid_fragment);
+    if (movieGridFragment.favoritesSelected) {
+      movieGridFragment.fetchFavoritedMovies();
+    }
+  }
   @Override
   public void onItemSelected(MovieModel movieModel) {
     String movieModelBundleKey = getString(R.string.bundle_key_movie_model);
+    if (movieModel.getPosterBitmap() == null) {
+      return;
+    }
 
     if (mTwoPane == true) {
       Bundle args = new Bundle();

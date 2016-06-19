@@ -1,13 +1,19 @@
 package com.kevinudacity.popularmovies;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.kevinudacity.popularmovies.data.MovieContract;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -22,6 +28,7 @@ public class MovieModel implements Parcelable {
   private double voteAverage;
   private String posterPath;
   private String id;
+  private Bitmap posterBitmap;
   private ArrayList<MovieReviewModel> reviews = new ArrayList<MovieReviewModel>();
   private ArrayList<MovieTrailerModel> trailers = new ArrayList<MovieTrailerModel>();
 
@@ -42,6 +49,22 @@ public class MovieModel implements Parcelable {
     this.voteAverage = movieJSONObject.getDouble(context.getString(R.string.movie_model_vote_average));
     this.posterPath = movieJSONObject.getString(context.getString(R.string.movie_model_poster_path));
     this.id = movieJSONObject.getString(context.getString(R.string.movie_model_id));
+  }
+
+  public MovieModel(Context context, Cursor cursor) {
+    this.originalTitle = cursor.getString(
+      cursor.getColumnIndex(MovieContract.FavoriteMovieEntry.COLUMN_ORIGINAL_TITLE));
+    this.releaseDate = cursor.getString(
+      cursor.getColumnIndex(MovieContract.FavoriteMovieEntry.COLUMN_RELEASE_DATE));
+    this.overview = cursor.getString(
+      cursor.getColumnIndex(MovieContract.FavoriteMovieEntry.COLUMN_OVERVIEW));
+    this.voteAverage = cursor.getDouble(
+      cursor.getColumnIndex(MovieContract.FavoriteMovieEntry.COLUMN_VOTE_AVERAGE));
+    this.id = cursor.getString(
+      cursor.getColumnIndex(MovieContract.FavoriteMovieEntry.COLUMN_MOVIE_ID));
+    byte[] blob = cursor.getBlob(
+      cursor.getColumnIndex(MovieContract.FavoriteMovieEntry.COLUMN_POSTER));
+    this.posterBitmap = BitmapFactory.decodeByteArray(blob, 0, blob.length);
   }
 
   public URL getFullPosterPath(Context context) throws MalformedURLException {
@@ -87,12 +110,20 @@ public class MovieModel implements Parcelable {
     return trailers;
   }
 
+  public Bitmap getPosterBitmap() {
+    return posterBitmap;
+  }
+
   public void setTrailers(ArrayList<MovieTrailerModel> trailers) {
     this.trailers = trailers;
   }
 
   public void setReviews(ArrayList<MovieReviewModel> reviews) {
     this.reviews = reviews;
+  }
+
+  public void setPosterBitmap(Bitmap posterBitmap) {
+    this.posterBitmap = posterBitmap;
   }
 
   @Override
@@ -108,6 +139,17 @@ public class MovieModel implements Parcelable {
     dest.writeDouble(voteAverage);
     dest.writeString(posterPath);
     dest.writeString(id);
+    dest.writeTypedList(reviews);
+    dest.writeTypedList(trailers);
+    if (posterBitmap != null) {
+      ByteArrayOutputStream stream = new ByteArrayOutputStream();
+      posterBitmap.compress(Bitmap.CompressFormat.PNG, 0, stream);
+      byte[] posterBytes = stream.toByteArray();
+      dest.writeInt(posterBytes.length);
+      dest.writeByteArray(posterBytes);
+    } else {
+      dest.writeInt(0);
+    }
   }
 
   public static final Parcelable.Creator<MovieModel> CREATOR
@@ -128,5 +170,13 @@ public class MovieModel implements Parcelable {
     voteAverage = in.readDouble();
     posterPath = in.readString();
     id = in.readString();
+    in.readTypedList(reviews, MovieReviewModel.CREATOR);
+    in.readTypedList(trailers, MovieTrailerModel.CREATOR);
+    int byteLength = in.readInt();
+    if (byteLength != 0) {
+      byte[] posterBytes = new byte[byteLength];
+      in.readByteArray(posterBytes);
+      posterBitmap = BitmapFactory.decodeByteArray(posterBytes, 0, posterBytes.length);
+    }
   }
 }

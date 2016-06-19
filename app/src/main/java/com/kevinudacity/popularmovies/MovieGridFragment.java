@@ -1,6 +1,7 @@
 package com.kevinudacity.popularmovies;
 
 
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,6 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+
+import com.kevinudacity.popularmovies.data.MovieContract;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,6 +38,7 @@ import java.util.Arrays;
 public class MovieGridFragment extends Fragment {
 
   private MovieGridAdapter movieGridAdapter;
+  public boolean favoritesSelected;
 
   public MovieGridFragment() {
     // Required empty public constructor
@@ -45,6 +49,7 @@ public class MovieGridFragment extends Fragment {
      * MovieGridFragment for when an item has been selected.
      */
     public void onItemSelected(MovieModel movieModel);
+    //public void onItemSelectable(MovieModel movieModel);
   }
 
   @Override
@@ -55,6 +60,59 @@ public class MovieGridFragment extends Fragment {
   @Override
   public void onStart() {
     super.onStart();
+    if (favoritesSelected) {
+      fetchFavoritedMovies();
+    }
+  }
+
+  public void fetchFavoritedMovies() {
+    // Fetch all the favorited movies from the db
+    favoritesSelected = true;
+    Cursor cursor =
+      getActivity().getContentResolver().query(MovieContract.FavoriteMovieEntry.CONTENT_URI,
+        null,
+        null,
+        null,
+        null);
+    ArrayList<MovieModel> movieModels = new ArrayList<>();
+    if (cursor != null) {
+      while (cursor.moveToNext()) {
+        MovieModel movieModel = new MovieModel(getActivity(), cursor);
+        // Get the trailers and reviews
+        String movieId = cursor.getString(cursor.getColumnIndex(MovieContract.FavoriteMovieEntry._ID));
+        Cursor trailerCursor =
+          getActivity().getContentResolver().query(MovieContract.TrailerEntry.CONTENT_URI,
+            null,
+            MovieContract.TrailerEntry.COLUMN_MOVIE_KEY + " = ?",
+            new String[]{movieId},
+            null);
+        Cursor reviewCursor =
+          getActivity().getContentResolver().query(MovieContract.ReviewEntry.CONTENT_URI,
+            null,
+            MovieContract.ReviewEntry.COLUMN_MOVIE_KEY + " = ?",
+            new String[]{movieId},
+            null);
+        ArrayList<MovieTrailerModel> movieTrailerModels = new ArrayList<>();
+        ArrayList<MovieReviewModel> movieReviewModels = new ArrayList<>();
+        if (trailerCursor != null) {
+          while (trailerCursor.moveToNext()) {
+            movieTrailerModels.add(new MovieTrailerModel(getActivity(), trailerCursor));
+          }
+          trailerCursor.close();
+        }
+        if (reviewCursor != null) {
+          while (reviewCursor.moveToNext()) {
+            movieReviewModels.add(new MovieReviewModel(getActivity(), reviewCursor));
+          }
+          reviewCursor.close();
+        }
+        movieModel.setReviews(movieReviewModels);
+        movieModel.setTrailers(movieTrailerModels);
+        movieModels.add(movieModel);
+      }
+      cursor.close();
+    }
+    movieGridAdapter.setMovieModels(movieModels);
   }
 
   @Override
@@ -64,14 +122,27 @@ public class MovieGridFragment extends Fragment {
     // as you specify a parent activity in AndroidManifest.xml.
     int id = item.getItemId();
     if (id == R.id.menu_sort_by_most_popular) {
+      favoritesSelected = false;
       fetchMovies(getString(R.string.moviedb_path_movie_most_popular));
       return true;
     }
     if (id == R.id.menu_sort_by_top_rated) {
+      favoritesSelected = false;
       fetchMovies(getString(R.string.moviedb_path_movie_top_rated));
       return true;
     }
+    if (id == R.id.menu_favorites) {
+      favoritesSelected = true;
+      fetchFavoritedMovies();
+    }
     return super.onOptionsItemSelected(item);
+  }
+
+  @Override
+  public void onSaveInstanceState(Bundle outState) {
+    ArrayList<MovieModel> movieModels = movieGridAdapter.getMovieModels();
+    outState.putParcelableArrayList("movieModels", movieModels);
+    super.onSaveInstanceState(outState);
   }
 
   @Override
@@ -92,8 +163,12 @@ public class MovieGridFragment extends Fragment {
       }
     });
 
-    fetchMovies(getString(R.string.moviedb_path_movie_most_popular));
-    // Inflate the layout for this fragment
+    if (savedInstanceState != null && savedInstanceState.containsKey("movieModels")) {
+      ArrayList<MovieModel> movieModels = savedInstanceState.getParcelableArrayList("movieModels");
+      movieGridAdapter.setMovieModels(movieModels);
+    } else {
+      fetchMovies(getString(R.string.moviedb_path_movie_most_popular));
+    }
     return rootView;
   }
 
@@ -161,7 +236,7 @@ public class MovieGridFragment extends Fragment {
     private String fetchBaseMovieData(String filter) throws MalformedURLException {
       Uri builtUri = Uri.parse(getString(R.string.moviedb_path_base)).buildUpon()
         .appendPath(filter)
-        .appendQueryParameter(getString(R.string.moviedb_query_param_api_key), "ac8a86fbbf47198c3e74964382ed086f")
+        .appendQueryParameter(getString(R.string.moviedb_query_param_api_key), "")
         .build();
 
       URL url = new URL(builtUri.toString());
@@ -182,6 +257,9 @@ public class MovieGridFragment extends Fragment {
     }
 
     private MovieModel[] getMovieDataFromJson(String stringMoviesJson) throws JSONException {
+      if (stringMoviesJson == null) {
+        return null;
+      }
       JSONObject moviesJson = new JSONObject(stringMoviesJson);
       JSONArray moviesJsonArray =
         moviesJson.getJSONArray(getString(R.string.generic_json_key_results));

@@ -1,8 +1,11 @@
 package com.kevinudacity.popularmovies;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.kevinudacity.popularmovies.data.MovieContract;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,15 +16,27 @@ import org.json.JSONObject;
 public class MovieTrailerModel implements Parcelable {
   private String name;
   private String key;
+  private String id;
 
-  public MovieTrailerModel(String name, String key) {
+  public MovieTrailerModel(String name, String key, String id) {
     this.name = name;
     this.key = key;
+    this.id = id;
   }
 
   public MovieTrailerModel(Context context, JSONObject movieTrailerJSONObject) throws JSONException {
-    this.name = movieTrailerJSONObject.getString(context.getString(R.string.movie_trailer_model_name));
-    this.key = movieTrailerJSONObject.getString(context.getString(R.string.movie_trailer_model_key));
+    this.name = movieTrailerJSONObject.getString("name");
+    this.key = movieTrailerJSONObject.getString("key");
+    this.id = movieTrailerJSONObject.getString("id");
+  }
+
+  public MovieTrailerModel(Context context, Cursor cursor) {
+    this.name = cursor.getString(
+      cursor.getColumnIndex(MovieContract.TrailerEntry.COLUMN_NAME));
+    this.key = cursor.getString(
+      cursor.getColumnIndex(MovieContract.TrailerEntry.COLUMN_KEY));
+    this.id = cursor.getString(
+      cursor.getColumnIndex(MovieContract.TrailerEntry.COLUMN_TRAILER_ID));
   }
 
   public String getName() {
@@ -30,6 +45,10 @@ public class MovieTrailerModel implements Parcelable {
 
   public String getKey() {
     return key;
+  }
+
+  public String getId() {
+    return id;
   }
 
   @Override
@@ -41,6 +60,7 @@ public class MovieTrailerModel implements Parcelable {
   public void writeToParcel(Parcel dest, int flags) {
     dest.writeString(name);
     dest.writeString(key);
+    dest.writeString(id);
   }
 
   public static final Parcelable.Creator<MovieTrailerModel> CREATOR
@@ -57,5 +77,6 @@ public class MovieTrailerModel implements Parcelable {
   private MovieTrailerModel(Parcel in) {
     name = in.readString();
     key = in.readString();
+    id = in.readString();
   }
 }

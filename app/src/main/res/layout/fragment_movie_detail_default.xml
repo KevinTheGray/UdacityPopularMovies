@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimaryDark">
+  <TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/movie_detail_fragment_title_bottom_margin"
+    android:layout_marginLeft="@dimen/movie_detail_fragment_horizontal_margin"
+    android:layout_marginStart="@dimen/movie_detail_fragment_horizontal_margin"
+    android:layout_marginTop="@dimen/movie_detail_fragment_title_top_margin"
+    android:text="Welcome to Popular Movies!  Select from the list of popular movies to see trailers, reviews, and more!"
+    android:textColor="@color/movie_detail_fragment_movie_title_text"
+    android:textSize="@dimen/movie_detail_fragment_title_view_text_size"/>
+</ScrollView>

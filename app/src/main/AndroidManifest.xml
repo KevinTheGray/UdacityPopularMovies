@@ -23,6 +23,11 @@
         android:name="android.support.PARENT_ACTIVITY"
         android:value="com.kevinudacity.popularmovies.MainActivity"/>-->
     </activity>
+    <provider
+      android:authorities="com.kevinudacity.popularmovies"
+      android:name=".data.MovieProvider"
+      android:exported="false"
+      android:syncable="true" />
   </application>
 
 </manifest>

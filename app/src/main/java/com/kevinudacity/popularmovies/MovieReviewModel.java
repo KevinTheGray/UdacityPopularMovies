@@ -1,8 +1,11 @@
 package com.kevinudacity.popularmovies;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.kevinudacity.popularmovies.data.MovieContract;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,15 +16,27 @@ import org.json.JSONObject;
 public class MovieReviewModel implements Parcelable {
   private String author;
   private String content;
+  private String id;
 
-  public MovieReviewModel(String author, String content) {
+  public MovieReviewModel(String author, String content, String id) {
     this.author = author;
     this.content = content;
+    this.id = id;
   }
 
   public MovieReviewModel(Context context, JSONObject movieReviewJSONObject) throws JSONException {
-    this.author = movieReviewJSONObject.getString(context.getString(R.string.movie_review_model_author));
-    this.content = movieReviewJSONObject.getString(context.getString(R.string.movie_review_model_content));
+    this.author = movieReviewJSONObject.getString("author");
+    this.content = movieReviewJSONObject.getString("content");
+    this.id = movieReviewJSONObject.getString("id");
+  }
+
+  public MovieReviewModel(Context context, Cursor cursor) {
+    this.author = cursor.getString(
+      cursor.getColumnIndex(MovieContract.ReviewEntry.COLUMN_AUTHOR));
+    this.content = cursor.getString(
+      cursor.getColumnIndex(MovieContract.ReviewEntry.COLUMN_CONTENT));
+    this.id = cursor.getString(
+      cursor.getColumnIndex(MovieContract.ReviewEntry.COLUMN_REVIEW_ID));
   }
 
   public String getAuthor() {
@@ -30,6 +45,10 @@ public class MovieReviewModel implements Parcelable {
 
   public String getContent() {
     return content;
+  }
+
+  public String getId() {
+    return id;
   }
 
   @Override
@@ -41,6 +60,7 @@ public class MovieReviewModel implements Parcelable {
   public void writeToParcel(Parcel dest, int flags) {
     dest.writeString(author);
     dest.writeString(content);
+    dest.writeString(id);
   }
 
   public static final Parcelable.Creator<MovieReviewModel> CREATOR
@@ -57,5 +77,6 @@ public class MovieReviewModel implements Parcelable {
   private MovieReviewModel(Parcel in) {
     author = in.readString();
     content = in.readString();
+    id = in.readString();
   }
 }
