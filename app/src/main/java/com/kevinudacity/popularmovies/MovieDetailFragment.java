@@ -43,6 +43,15 @@ public class MovieDetailFragment extends Fragment {
                            Bundle savedInstanceState) {
     // Inflate the layout for this fragment
     View rootView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
+    // Maintains the scroll position
+    if (savedInstanceState != null && savedInstanceState.containsKey(getString(R.string.bundle_key_movie_model))) {
+      movieModel = savedInstanceState.getParcelable(getString(R.string.bundle_key_movie_model));
+      mMovieDetailAdapter = new MovieDetailAdapter(getActivity(), movieModel);
+      ListView listView = (ListView) rootView.findViewById(R.id.movie_detail_fragment_listview);
+      listView.setAdapter(mMovieDetailAdapter);
+      fetchMovieDetails();
+      return rootView;
+    }
     Bundle bundle = getActivity().getIntent().getExtras();
     if (bundle == null) {
       bundle = getArguments();
@@ -58,6 +67,13 @@ public class MovieDetailFragment extends Fragment {
     }
 
     return rootView;
+  }
+
+  @Override
+  public void onSaveInstanceState(Bundle outState) {
+    super.onSaveInstanceState(outState);
+    String movieModelBundleKey = getString(R.string.bundle_key_movie_model);
+    outState.putParcelable(movieModelBundleKey, movieModel);
   }
 
   // Helpers
@@ -125,7 +141,7 @@ public class MovieDetailFragment extends Fragment {
       Uri builtUri = Uri.parse("http://api.themoviedb.org/3/movie").buildUpon()
         .appendPath(id)
         .appendPath(dataPath)
-        .appendQueryParameter("api_key", "")
+        .appendQueryParameter("api_key", "PUT_API_KEY_HERE")
         .build();
 
       URL url = new URL(builtUri.toString());

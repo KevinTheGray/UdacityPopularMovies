@@ -9,7 +9,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:columnWidth="@dimen/movie_grid_fragment_cell_width"
-    android:stretchMode="spacingWidthUniform"
+    android:stretchMode="none"
     android:numColumns="auto_fit"/>
 
 </FrameLayout>

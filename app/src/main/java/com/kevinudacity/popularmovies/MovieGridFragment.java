@@ -142,6 +142,7 @@ public class MovieGridFragment extends Fragment {
   public void onSaveInstanceState(Bundle outState) {
     ArrayList<MovieModel> movieModels = movieGridAdapter.getMovieModels();
     outState.putParcelableArrayList("movieModels", movieModels);
+    outState.putBoolean("favoritesSelected", favoritesSelected);
     super.onSaveInstanceState(outState);
   }
 
@@ -168,6 +169,9 @@ public class MovieGridFragment extends Fragment {
       movieGridAdapter.setMovieModels(movieModels);
     } else {
       fetchMovies(getString(R.string.moviedb_path_movie_most_popular));
+    }
+    if (savedInstanceState != null && savedInstanceState.containsKey("favoritesSelected")) {
+      favoritesSelected = savedInstanceState.getBoolean("favoritesSelected");
     }
     return rootView;
   }
@@ -236,7 +240,7 @@ public class MovieGridFragment extends Fragment {
     private String fetchBaseMovieData(String filter) throws MalformedURLException {
       Uri builtUri = Uri.parse(getString(R.string.moviedb_path_base)).buildUpon()
         .appendPath(filter)
-        .appendQueryParameter(getString(R.string.moviedb_query_param_api_key), "")
+        .appendQueryParameter(getString(R.string.moviedb_query_param_api_key), "PUT_API_KEY_HERE")
         .build();
 
       URL url = new URL(builtUri.toString());
@@ -248,7 +252,7 @@ public class MovieGridFragment extends Fragment {
       Uri builtUri = Uri.parse(getString(R.string.moviedb_path_base)).buildUpon()
         .appendPath(id)
         .appendPath(dataPath)
-        .appendQueryParameter(getString(R.string.moviedb_query_param_api_key), "")
+        .appendQueryParameter(getString(R.string.moviedb_query_param_api_key), "PUT_API_KEY_HERE")
         .build();
 
       URL url = new URL(builtUri.toString());
@@ -269,20 +273,6 @@ public class MovieGridFragment extends Fragment {
           JSONObject movieJSONObject = moviesJsonArray.getJSONObject(i);
           // Get the id out so we can get additional informtion
           String movieId = movieJSONObject.getString(getActivity().getString(R.string.movie_model_id));
-
-          // Get the trailers
-          /*String trailersJSONString = fetchMovieAdditionalData(movieId,
-            getString(R.string.moviedb_path_movie_videos));
-          JSONObject trailersJSONObject = new JSONObject(trailersJSONString);
-          JSONArray trailersJSONArray =
-            trailersJSONObject.getJSONArray(getString(R.string.generic_json_key_results));
-
-          // Get the reviews
-          String reviewsJSONString = fetchMovieAdditionalData(movieId,
-            getString(R.string.moviedb_path_movie_reviews));
-          JSONObject reviewsJSONObject = new JSONObject(reviewsJSONString);
-          JSONArray reviewsJSONArray =
-            reviewsJSONObject.getJSONArray(getString(R.string.generic_json_key_results));*/
 
           MovieModel model = new MovieModel(getActivity(), movieJSONObject);
           returnedMovieModels[i] = model;
